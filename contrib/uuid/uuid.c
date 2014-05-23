@@ -33,12 +33,18 @@
 #include "utils/builtins.h"
 #include "utils/uuid.h"
 
-#ifdef HAVE_UUID_H
+#ifdef HAVE_BSD_UUID
+/* OS has a uuid_hash that conflicts with ours; kill it*/
+/* explicit path since we do _not_ want to get any other version */
+#undef uuid_hash
+#define uuid_hash bsd_uuid_hash
+#include "/usr/include/uuid.h"
+#undef uuid_hash
 #include <uuid.h>
-#else
-#ifdef HAVE_UUID_UUID_H
-#include <uuid/uuid.h>
 #endif
+
+#ifdef HAVE_LINUX_UUID
+#include <uuid/uuid.h>
 #endif
 
 #include "md5.h"
@@ -87,6 +93,8 @@ typedef struct dce_uuid {
         uint8_t         clock_seq_low;
         uint8_t         node[6];
 } dce_uuid_t;
+#else
+#define dce_uuid_t uuid_t
 #endif
 
 #define UUID_TO_NETWORK(uu) \
@@ -204,9 +212,8 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 		case 3:	 /* namespace-based MD5 uuids */
 		{
 			MD5_CTX ctx;
-#ifdef HAVE_LINUX_UUID
 			dce_uuid_t uu;
-#else
+#ifdef HAVE_BSD_UUID
 			uint32_t status = uuid_s_ok;
 			char *str = NULL;
 #endif
@@ -252,9 +259,8 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 		case 5:	 /* namespace-based SHA1 uuids */
 		{
 			SHA1_CTX ctx;
-#ifdef HAVE_LINUX_UUID
 			dce_uuid_t uu;
-#else
+#ifdef HAVE_BSD_UUID
 			uint32_t status = uuid_s_ok;
 			char *str = NULL;
 #endif
