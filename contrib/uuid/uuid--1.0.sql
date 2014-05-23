@@ -1,7 +1,7 @@
-/* contrib/uuid-ossp/uuid-ossp--1.0.sql */
+-- uuid-freebsd extension
 
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
-\echo Use '''CREATE EXTENSION "uuid-ossp"''' to load this file. \quit
+\echo Use CREATE EXTENSION "uuid-freebsd"; to load this file. \quit
 
 CREATE FUNCTION uuid_nil()
 RETURNS uuid
@@ -52,3 +52,5 @@ CREATE FUNCTION uuid_generate_v5(namespace uuid, name text)
 RETURNS uuid
 AS 'MODULE_PATHNAME', 'uuid_generate_v5'
 IMMUTABLE STRICT LANGUAGE C;
+
+-- end

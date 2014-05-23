@@ -1,12 +1,10 @@
-# contrib/uuid-ossp/Makefile
 
-MODULE_big = uuid-ossp
-OBJS = uuid-ossp.o
+EXTENSION = uuid
+DATA = uuid--1.0.sql
+MODULE_big = uuid
+OBJS = uuid.o md5.o sha1.o
 
-EXTENSION = uuid-ossp
-DATA = uuid-ossp--1.0.sql uuid-ossp--unpackaged--1.0.sql
-
-SHLIB_LINK += $(OSSP_UUID_LIBS)
+SHLIB_LINK += $(LIBS)
 
 ifdef USE_PGXS
 PG_CONFIG = pg_config

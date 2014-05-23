@@ -657,7 +657,7 @@ acx_pthread_config
 have_win32_dbghelp
 HAVE_IPV6
 LIBOBJS
-OSSP_UUID_LIBS
+UUID_LIBS
 ZIC
 python_enable_shared
 python_additional_libs
@@ -705,7 +705,7 @@ with_system_tzdata
 with_libxslt
 with_libxml
 XML2_CONFIG
-with_ossp_uuid
+with_uuid
 with_selinux
 with_openssl
 krb_srvtab
@@ -826,7 +826,7 @@ with_openssl
 with_selinux
 with_readline
 with_libedit_preferred
-with_ossp_uuid
+with_uuid
 with_libxml
 with_libxslt
 with_system_tzdata
@@ -1512,7 +1512,8 @@ Optional Packages:
   --without-readline      do not use GNU Readline nor BSD Libedit for editing
   --with-libedit-preferred
                           prefer BSD Libedit over GNU Readline
-  --with-ossp-uuid        build contrib/uuid-ossp, requires OSSP UUID library
+  --with-uuid             build contrib/uuid, requires Linux or BSD UUID
+                          library
   --with-libxml           build with XML support
   --with-libxslt          use XSLT support when building contrib/xml2
   --with-system-tzdata=DIR
@@ -5614,14 +5615,14 @@ fi
 
 
 #
-# OSSP UUID library
+# UUID library
 #
 
 
 
-# Check whether --with-ossp-uuid was given.
-if test "${with_ossp_uuid+set}" = set; then :
-  withval=$with_ossp_uuid;
+# Check whether --with-uuid was given.
+if test "${with_uuid+set}" = set; then :
+  withval=$with_uuid;
   case $withval in
     yes)
       :
@@ -5630,12 +5631,12 @@ if test "${with_ossp_uuid+set}" = set; then :
       :
       ;;
     *)
-      as_fn_error $? "no argument expected for --with-ossp-uuid option" "$LINENO" 5
+      as_fn_error $? "no argument expected for --with-uuid option" "$LINENO" 5
       ;;
   esac
 
 else
-  with_ossp_uuid=no
+  with_uuid=no
 
 fi
 
@@ -8774,15 +8775,14 @@ fi
 
 fi
 
-# for contrib/uuid-ossp
-if test "$with_ossp_uuid" = yes ; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uuid_export in -lossp-uuid" >&5
-$as_echo_n "checking for uuid_export in -lossp-uuid... " >&6; }
-if ${ac_cv_lib_ossp_uuid_uuid_export+:} false; then :
+# for contrib/uuid
+if test "$with_uuid" = yes ; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing uuid_generate" >&5
+$as_echo_n "checking for library containing uuid_generate... " >&6; }
+if ${ac_cv_search_uuid_generate+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lossp-uuid  $LIBS"
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -8792,36 +8792,54 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char uuid_export ();
+char uuid_generate ();
 int
 main ()
 {
-return uuid_export ();
+return uuid_generate ();
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ossp_uuid_uuid_export=yes
-else
-  ac_cv_lib_ossp_uuid_uuid_export=no
+for ac_lib in '' uuid; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_uuid_generate=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
+    conftest$ac_exeext
+  if ${ac_cv_search_uuid_generate+:} false; then :
+  break
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ossp_uuid_uuid_export" >&5
-$as_echo "$ac_cv_lib_ossp_uuid_uuid_export" >&6; }
-if test "x$ac_cv_lib_ossp_uuid_uuid_export" = xyes; then :
-  OSSP_UUID_LIBS="-lossp-uuid"
+done
+if ${ac_cv_search_uuid_generate+:} false; then :
+
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uuid_export in -luuid" >&5
-$as_echo_n "checking for uuid_export in -luuid... " >&6; }
-if ${ac_cv_lib_uuid_uuid_export+:} false; then :
+  ac_cv_search_uuid_generate=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_uuid_generate" >&5
+$as_echo "$ac_cv_search_uuid_generate" >&6; }
+ac_res=$ac_cv_search_uuid_generate
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+$as_echo "#define HAVE_LINUX_UUID 1" >>confdefs.h
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing uuid_create" >&5
+$as_echo_n "checking for library containing uuid_create... " >&6; }
+if ${ac_cv_search_uuid_create+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-luuid  $LIBS"
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -8831,30 +8849,49 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char uuid_export ();
+char uuid_create ();
 int
 main ()
 {
-return uuid_export ();
+return uuid_create ();
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_uuid_uuid_export=yes
-else
-  ac_cv_lib_uuid_uuid_export=no
+for ac_lib in '' md; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_uuid_create=$ac_res
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
+    conftest$ac_exeext
+  if ${ac_cv_search_uuid_create+:} false; then :
+  break
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_uuid_uuid_export" >&5
-$as_echo "$ac_cv_lib_uuid_uuid_export" >&6; }
-if test "x$ac_cv_lib_uuid_uuid_export" = xyes; then :
-  OSSP_UUID_LIBS="-luuid"
+done
+if ${ac_cv_search_uuid_create+:} false; then :
+
 else
-  as_fn_error $? "library 'ossp-uuid' or 'uuid' is required for OSSP-UUID" "$LINENO" 5
+  ac_cv_search_uuid_create=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_uuid_create" >&5
+$as_echo "$ac_cv_search_uuid_create" >&6; }
+ac_res=$ac_cv_search_uuid_create
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+$as_echo "#define HAVE_BSD_UUID 1" >>confdefs.h
+
+else
+  as_fn_error $? "either Linux or BSD variants of uuid support are required" "$LINENO" 5
 fi
 
 fi
@@ -9397,19 +9434,9 @@ fi
 
 fi
 
-# for contrib/uuid-ossp
-if test "$with_ossp_uuid" = yes ; then
-  for ac_header in ossp/uuid.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "ossp/uuid.h" "ac_cv_header_ossp_uuid_h" "$ac_includes_default"
-if test "x$ac_cv_header_ossp_uuid_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_OSSP_UUID_H 1
-_ACEOF
-
-else
-
-    for ac_header in uuid.h
+# for contrib/uuid
+if test "$with_uuid" = yes ; then
+  for ac_header in uuid.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "uuid.h" "ac_cv_header_uuid_h" "$ac_includes_default"
 if test "x$ac_cv_header_uuid_h" = xyes; then :
@@ -9418,7 +9445,17 @@ if test "x$ac_cv_header_uuid_h" = xyes; then :
 _ACEOF
 
 else
-  as_fn_error $? "header file <ossp/uuid.h> or <uuid.h> is required for OSSP-UUID" "$LINENO" 5
+
+    for ac_header in uuid/uuid.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "uuid/uuid.h" "ac_cv_header_uuid_uuid_h" "$ac_includes_default"
+if test "x$ac_cv_header_uuid_uuid_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_UUID_UUID_H 1
+_ACEOF
+
+else
+  as_fn_error $? "header file <uuid/uuid.h> or <uuid.h> is required for UUID" "$LINENO" 5
 fi
 
 done
