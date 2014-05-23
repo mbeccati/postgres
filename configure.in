@@ -950,7 +950,7 @@ fi
 # for contrib/uuid
 if test "$with_uuid" = yes ; then
   AC_SEARCH_LIBS([uuid_generate], [uuid], [AC_DEFINE([HAVE_LINUX_UUID], 1, [Define to 1 if you have Linux UUID support.])],
-    [AC_SEARCH_LIBS([uuid_create], [md], [AC_DEFINE([HAVE_BSD_UUID], 1, [Define to 1 if you have BSD UUID support.])],
+    [AC_SEARCH_LIBS([uuid_create], [], [AC_DEFINE([HAVE_BSD_UUID], 1, [Define to 1 if you have BSD UUID support.])],
       [AC_MSG_ERROR([either Linux or BSD variants of uuid support are required])])])
 fi
 AC_SUBST(UUID_LIBS)

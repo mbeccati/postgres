@@ -4,7 +4,7 @@ DATA = uuid--1.0.sql
 MODULE_big = uuid
 OBJS = uuid.o md5.o sha1.o
 
-SHLIB_LINK += $(LIBS)
+SHLIB_LINK += $(filter -luuid, $(LIBS))
 
 ifdef USE_PGXS
 PG_CONFIG = pg_config
