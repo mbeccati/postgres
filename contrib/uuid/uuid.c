@@ -230,6 +230,7 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			UUID_V3_OR_V5(uu, 3);
 
 #ifdef HAVE_LINUX_UUID
+			UUID_TO_LOCAL(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
 			uuid_to_string(&uu, &str, &status);
@@ -276,6 +277,7 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			UUID_V3_OR_V5(uu, 5);
 
 #ifdef HAVE_LINUX_UUID
+			UUID_TO_LOCAL(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
 			uuid_to_string(&uu, &str, &status);
