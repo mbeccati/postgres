@@ -220,17 +220,16 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 
 			/* Convert to network order */
 			uu = *((dce_uuid_t *)ns);
-			UUID_TO_NETWORK(uu);
 
 			MD5Init(&ctx);
 			MD5Update(&ctx, (unsigned char *)&uu, sizeof(uu));
 			MD5Update(&ctx, (unsigned char *)ptr, len);
 			MD5Final((unsigned char *)&uu, &ctx);
 
+			UUID_TO_NETWORK(uu);
 			UUID_V3_OR_V5(uu, 3);
 
 #ifdef HAVE_LINUX_UUID
-			UUID_TO_NETWORK(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
 			uuid_to_string(&uu, &str, &status);
@@ -267,17 +266,16 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 
 			/* Convert to network order */
 			uu = *((dce_uuid_t *)ns);
-			UUID_TO_NETWORK(uu);
 
 			SHA1Init(&ctx);
 			SHA1Update(&ctx, (unsigned char *)&uu, sizeof(uu));
 			SHA1Update(&ctx, (unsigned char *)ptr, len);
 			SHA1Final((unsigned char *)&uu, &ctx);
 
+			UUID_TO_NETWORK(uu);
 			UUID_V3_OR_V5(uu, 5);
 
 #ifdef HAVE_LINUX_UUID
-			UUID_TO_NETWORK(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
 			uuid_to_string(&uu, &str, &status);
