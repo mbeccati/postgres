@@ -1,7 +1,8 @@
 /*-------------------------------------------------------------------------
  *
- * UUID generation functions for FreeBSD
+ * UUID generation functions for PostgreSQL
  *
+ * Copyright (c) 2014 Matteo Beccati
  * Copyright (c) 2009 Andrew Gierth
  *
  * Some parts originated from contrib/uuid-ossp, which is
@@ -47,6 +48,9 @@
 #include <uuid/uuid.h>
 #endif
 
+/* Some BSD variants offer md5 and sha1 implementations
+ * but Linux does not, so we use a copy of the ones from
+ * pgcrypto */
 #include "md5.h"
 #include "sha1.h"
 
@@ -76,10 +80,6 @@ PG_FUNCTION_INFO_V1(uuid_generate_v3);
 PG_FUNCTION_INFO_V1(uuid_generate_v4);
 PG_FUNCTION_INFO_V1(uuid_generate_v5);
 
-/* we assume that the string representation is portable and that the
- * native binary representation might not be. But for *ns, we assume
- * that pg's internal storage of uuids is the simple byte-oriented
- * binary format. */
 
 #ifdef HAVE_LINUX_UUID
 /* A DCE 1.1 compatible source representation of UUIDs, derived from
@@ -121,6 +121,7 @@ do \
 	uu.clock_seq_hi_and_reserved &= 0x3F; \
 	uu.clock_seq_hi_and_reserved |= 0x80; \
 } while(0)
+
 
 static Datum
 internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
@@ -184,7 +185,7 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			{
 				ereport(ERROR,
 						(errcode(ERRCODE_EXTERNAL_ROUTINE_EXCEPTION),
-						 errmsg("FreeBSD uuid library failure: %d", (int) status)));
+						 errmsg("uuid library failure: %d", (int) status)));
 			}
 #else
 
@@ -204,6 +205,8 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			uuid_unparse(ut, strbuf);
 			uuid_unparse(ur, buf);
 
+			/* the first part of the uuid is time based
+			 * while the second one is random */
 			strlcpy(strbuf + 18, buf + 18, 19);
 #endif
 			break;
@@ -218,18 +221,17 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			char *str = NULL;
 #endif
 
-			/* Convert to network order */
-			uu = *((dce_uuid_t *)ns);
-
 			MD5Init(&ctx);
-			MD5Update(&ctx, (unsigned char *)&uu, sizeof(uu));
+			MD5Update(&ctx, ns, sizeof(uu));
 			MD5Update(&ctx, (unsigned char *)ptr, len);
 			MD5Final((unsigned char *)&uu, &ctx);
 
+			/* the calculated hash is using local order */
 			UUID_TO_NETWORK(uu);
 			UUID_V3_OR_V5(uu, 3);
 
 #ifdef HAVE_LINUX_UUID
+			/* uuid_unparse expects local order */
 			UUID_TO_LOCAL(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
@@ -249,7 +251,7 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			{
 				ereport(ERROR,
 					(errcode(ERRCODE_EXTERNAL_ROUTINE_EXCEPTION),
-					errmsg("FreeBSD uuid library failure: %d", (int) status)));
+					errmsg("uuid library failure: %d", (int) status)));
 			}
 
 #endif
@@ -265,18 +267,17 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			char *str = NULL;
 #endif
 
-			/* Convert to network order */
-			uu = *((dce_uuid_t *)ns);
-
 			SHA1Init(&ctx);
-			SHA1Update(&ctx, (unsigned char *)&uu, sizeof(uu));
+			SHA1Update(&ctx, ns, sizeof(uu));
 			SHA1Update(&ctx, (unsigned char *)ptr, len);
 			SHA1Final((unsigned char *)&uu, &ctx);
 
+			/* the calculated hash is using local order */
 			UUID_TO_NETWORK(uu);
 			UUID_V3_OR_V5(uu, 5);
 
 #ifdef HAVE_LINUX_UUID
+			/* uuid_unparse expects local order */
 			UUID_TO_LOCAL(uu);
 			uuid_unparse((unsigned char *)&uu, strbuf);
 #else
@@ -296,7 +297,7 @@ internal_uuid_create(int v, unsigned char *ns, char *ptr, int len)
 			{
 				ereport(ERROR,
 					(errcode(ERRCODE_EXTERNAL_ROUTINE_EXCEPTION),
-					errmsg("FreeBSD uuid library failure: %d", (int) status)));
+					errmsg("uuid library failure: %d", (int) status)));
 			}
 
 #endif
