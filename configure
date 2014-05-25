@@ -657,7 +657,6 @@ acx_pthread_config
 have_win32_dbghelp
 HAVE_IPV6
 LIBOBJS
-UUID_LIBS
 ZIC
 python_enable_shared
 python_additional_libs
@@ -8858,7 +8857,7 @@ return uuid_create ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' md; do
+for ac_lib in '' ; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -8897,7 +8896,6 @@ fi
 fi
 
 fi
-
 
 
 ##
