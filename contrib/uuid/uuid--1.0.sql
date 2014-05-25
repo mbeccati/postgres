@@ -1,7 +1,7 @@
--- uuid-freebsd extension
+-- uuid extension
 
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
-\echo Use CREATE EXTENSION "uuid-freebsd"; to load this file. \quit
+\echo Use CREATE EXTENSION "uuid"; to load this file. \quit
 
 CREATE FUNCTION uuid_nil()
 RETURNS uuid
