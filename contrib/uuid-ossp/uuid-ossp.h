@@ -51,9 +51,15 @@
 * pgcrypto. They are not needed with OSSP though */
 #include "md5.h"
 #include "sha1.h"
-#endif
 
-#ifdef HAVE_UUID_OSSP
+/* Define some constants to make the code more readable */
+#define UUID_MAKE_MC 0
+#define UUID_MAKE_V1 1
+#define UUID_MAKE_V2 2
+#define UUID_MAKE_V3 3
+#define UUID_MAKE_V4 4
+#define UUID_MAKE_V5 5
+#else
 /* better both be 16 */
 #if (UUID_LEN != UUID_LEN_BIN)
 #error UUID length mismatch

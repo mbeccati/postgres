@@ -92,8 +92,9 @@ special_uuid_value(const char *name)
 	return DirectFunctionCall1(uuid_in, CStringGetDatum(str));
 }
 
+/* len is unused with ossp, but required to have the same number of args */
 static Datum
-uuid_generate_internal(int mode, const uuid_t *ns, const char *name)
+uuid_generate_internal(int mode, const uuid_t *ns, const char *name, int len)
 {
 	uuid_t	   *uuid;
 	char	   *str;
@@ -346,11 +347,7 @@ uuid_ns_x500(PG_FUNCTION_ARGS)
 Datum
 uuid_generate_v1(PG_FUNCTION_ARGS)
 {
-#ifdef HAVE_UUID_OSSP
-	return uuid_generate_internal(UUID_MAKE_V1, NULL, NULL);
-#else
-	return uuid_generate_internal(1, NULL, NULL, 0);
-#endif
+	return uuid_generate_internal(UUID_MAKE_V1, NULL, NULL, 0);
 }
 
 
@@ -358,7 +355,7 @@ Datum
 uuid_generate_v1mc(PG_FUNCTION_ARGS)
 {
 #ifdef HAVE_UUID_OSSP
-	return uuid_generate_internal(UUID_MAKE_V1 | UUID_MAKE_MC, NULL, NULL);
+	char *buf = NULL;
 #else
 #ifdef HAVE_UUID_LINUX
 	char strbuf[40];
@@ -376,8 +373,8 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 			(unsigned)((arc4random() & 0xffff) | 0x0300),
 			(unsigned long) arc4random());
 #endif
-	return uuid_generate_internal(1, NULL, buf, 13);
 #endif
+	return uuid_generate_internal(UUID_MAKE_V1 | UUID_MAKE_MC, NULL, buf, buf ? 13 : 0);
 }
 
 
@@ -390,7 +387,7 @@ uuid_generate_v3(PG_FUNCTION_ARGS)
 #ifdef HAVE_UUID_OSSP
 	return uuid_generate_v35_internal(UUID_MAKE_V3, ns, name);
 #else
-	return uuid_generate_internal(3, (unsigned char *)ns,
+	return uuid_generate_internal(UUID_MAKE_V3, (unsigned char *)ns,
 					  VARDATA(name), VARSIZE(name) - VARHDRSZ);
 #endif
 }
@@ -399,11 +396,7 @@ uuid_generate_v3(PG_FUNCTION_ARGS)
 Datum
 uuid_generate_v4(PG_FUNCTION_ARGS)
 {
-#ifdef HAVE_UUID_OSSP
-	return uuid_generate_internal(UUID_MAKE_V4, NULL, NULL);
-#else
-	return uuid_generate_internal(4, NULL, NULL, 0);
-#endif
+	return uuid_generate_internal(UUID_MAKE_V4, NULL, NULL, 0);
 }
 
 
@@ -416,7 +409,7 @@ uuid_generate_v5(PG_FUNCTION_ARGS)
 #ifdef HAVE_UUID_OSSP
 	return uuid_generate_v35_internal(UUID_MAKE_V5, ns, name);
 #else
-	return uuid_generate_internal(5, (unsigned char *)ns,
-					  VARDATA(name), VARSIZE(name) - VARHDRSZ);	
+	return uuid_generate_internal(UUID_MAKE_V5, (unsigned char *)ns,
+					  VARDATA(name), VARSIZE(name) - VARHDRSZ);
 #endif
 }
