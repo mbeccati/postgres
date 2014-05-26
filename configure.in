@@ -950,10 +950,22 @@ fi
 # for contrib/uuid-ossp
 if test "$with_ossp_uuid" = yes ; then
   AC_CHECK_LIB(ossp-uuid, uuid_export,
-    [OSSP_UUID_LIBS="-lossp-uuid"],
+    [OSSP_UUID_LIBS="-lossp-uuid"
+    AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
     [AC_CHECK_LIB(uuid, uuid_export,
-      [OSSP_UUID_LIBS="-luuid"],
-      [AC_MSG_ERROR([library 'ossp-uuid' or 'uuid' is required for OSSP-UUID])])])
+      [OSSP_UUID_LIBS="-luuid"
+      AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
+      [AC_CHECK_LIB(uuid, uuid_generate,
+        [OSSP_UUID_LIBS="-luuid"
+	AC_DEFINE([HAVE_UUID_LINUX], 1, [Define to 1 if you have Linux UUID support.])],
+        [AC_CHECK_FUNC(uuid_create,
+          [OSSP_UUID_LIBS=""
+          AC_DEFINE([HAVE_UUID_BSD], 1, [Define to 1 if you have BSD UUID support.])],
+          [AC_MSG_ERROR([library 'ossp-uuid' or 'uuid' is required for OSSP-UUID])]
+        )]
+      )]
+    )]
+  )
 fi
 AC_SUBST(OSSP_UUID_LIBS)
 
@@ -1077,8 +1089,9 @@ fi
 # for contrib/uuid-ossp
 if test "$with_ossp_uuid" = yes ; then
   AC_CHECK_HEADERS(ossp/uuid.h, [], [
-    AC_CHECK_HEADERS(uuid.h, [],
-      [AC_MSG_ERROR([header file <ossp/uuid.h> or <uuid.h> is required for OSSP-UUID])])])
+    AC_CHECK_HEADERS(uuid/uuid.h, [], [
+      AC_CHECK_HEADERS(uuid.h, [],
+        [AC_MSG_ERROR([header file <ossp/uuid.h>, <uuid/uuid.h> or <uuid.h> is required for OSSP-UUID])])])])
 fi
 
 if test "$PORTNAME" = "win32" ; then
