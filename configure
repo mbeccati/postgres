@@ -657,6 +657,7 @@ acx_pthread_config
 have_win32_dbghelp
 HAVE_IPV6
 LIBOBJS
+OSSP_UUID_OBJS
 OSSP_UUID_LIBS
 ZIC
 python_enable_shared
@@ -8814,6 +8815,7 @@ fi
 $as_echo "$ac_cv_lib_ossp_uuid_uuid_export" >&6; }
 if test "x$ac_cv_lib_ossp_uuid_uuid_export" = xyes; then :
   OSSP_UUID_LIBS="-lossp-uuid"
+      OSSP_UUID_OBJS=""
 
 $as_echo "#define HAVE_UUID_OSSP 1" >>confdefs.h
 
@@ -8856,6 +8858,7 @@ fi
 $as_echo "$ac_cv_lib_uuid_uuid_export" >&6; }
 if test "x$ac_cv_lib_uuid_uuid_export" = xyes; then :
   OSSP_UUID_LIBS="-luuid"
+        OSSP_UUID_OBJS=""
 
 $as_echo "#define HAVE_UUID_OSSP 1" >>confdefs.h
 
@@ -8898,6 +8901,7 @@ fi
 $as_echo "$ac_cv_lib_uuid_uuid_generate" >&6; }
 if test "x$ac_cv_lib_uuid_uuid_generate" = xyes; then :
   OSSP_UUID_LIBS="-luuid"
+          OSSP_UUID_OBJS="md5.o sha1.o"
 
 $as_echo "#define HAVE_UUID_LINUX 1" >>confdefs.h
 
@@ -8905,6 +8909,7 @@ else
   ac_fn_c_check_func "$LINENO" "uuid_create" "ac_cv_func_uuid_create"
 if test "x$ac_cv_func_uuid_create" = xyes; then :
   OSSP_UUID_LIBS=""
+            OSSP_UUID_OBJS="md5.o sha1.o"
 
 $as_echo "#define HAVE_UUID_BSD 1" >>confdefs.h
 
@@ -8923,6 +8928,7 @@ fi
 fi
 
 fi
+
 
 
 

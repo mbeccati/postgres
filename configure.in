@@ -951,16 +951,20 @@ fi
 if test "$with_ossp_uuid" = yes ; then
   AC_CHECK_LIB(ossp-uuid, uuid_export,
     [OSSP_UUID_LIBS="-lossp-uuid"
-    AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
+      OSSP_UUID_OBJS=""
+      AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
     [AC_CHECK_LIB(uuid, uuid_export,
       [OSSP_UUID_LIBS="-luuid"
-      AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
+        OSSP_UUID_OBJS=""
+        AC_DEFINE([HAVE_UUID_OSSP], 1, [Define to 1 if you have OSSP UUID support.])],
       [AC_CHECK_LIB(uuid, uuid_generate,
         [OSSP_UUID_LIBS="-luuid"
-	AC_DEFINE([HAVE_UUID_LINUX], 1, [Define to 1 if you have Linux UUID support.])],
+          OSSP_UUID_OBJS="md5.o sha1.o"
+	  AC_DEFINE([HAVE_UUID_LINUX], 1, [Define to 1 if you have Linux UUID support.])],
         [AC_CHECK_FUNC(uuid_create,
           [OSSP_UUID_LIBS=""
-          AC_DEFINE([HAVE_UUID_BSD], 1, [Define to 1 if you have BSD UUID support.])],
+            OSSP_UUID_OBJS="md5.o sha1.o"
+            AC_DEFINE([HAVE_UUID_BSD], 1, [Define to 1 if you have BSD UUID support.])],
           [AC_MSG_ERROR([library 'ossp-uuid' or 'uuid' is required for OSSP-UUID])]
         )]
       )]
@@ -968,6 +972,7 @@ if test "$with_ossp_uuid" = yes ; then
   )
 fi
 AC_SUBST(OSSP_UUID_LIBS)
+AC_SUBST(OSSP_UUID_OBJS)
 
 
 ##
