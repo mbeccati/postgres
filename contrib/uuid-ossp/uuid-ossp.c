@@ -360,7 +360,7 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 #ifdef HAVE_UUID_OSSP
 	return uuid_generate_internal(UUID_MAKE_V1 | UUID_MAKE_MC, NULL, NULL);
 #else
-#ifdef HAVE_LINUX_UUID
+#ifdef HAVE_UUID_LINUX
 	char strbuf[40];
 	char *buf;
 	uuid_t uu;
