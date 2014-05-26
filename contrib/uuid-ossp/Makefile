@@ -1,10 +1,12 @@
 # contrib/uuid-ossp/Makefile
 
 MODULE_big = uuid-ossp
-OBJS = uuid-ossp.o
+OBJS = uuid-ossp.o md5.o sha1.o
 
 EXTENSION = uuid-ossp
 DATA = uuid-ossp--1.0.sql uuid-ossp--unpackaged--1.0.sql
+
+REGRESS = init v1 v35
 
 SHLIB_LINK += $(OSSP_UUID_LIBS)
 

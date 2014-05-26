@@ -1,0 +1,12 @@
+SELECT uuid_generate_v3(uuid_ns_dns(), 'www.widgets.com');
+           uuid_generate_v3           
+--------------------------------------
+ 3d813cbb-47fb-32ba-91df-831e1593ac29
+(1 row)
+
+SELECT uuid_generate_v5(uuid_ns_dns(), 'www.widgets.com');
+           uuid_generate_v5           
+--------------------------------------
+ 21f7f8de-8051-5b89-8680-0195ef798b6a
+(1 row)
+

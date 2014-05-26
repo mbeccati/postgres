@@ -1,0 +1,30 @@
+SELECT uuid_generate_v1() < uuid_generate_v1();
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT uuid_generate_v1() < uuid_generate_v1mc();
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT substr(uuid_generate_v1()::text, 20) = substr(uuid_generate_v1()::text, 20);
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT substr(uuid_generate_v1()::text, 20) <> substr(uuid_generate_v1mc()::text, 20);
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT substr(uuid_generate_v1mc()::text, 20) <> substr(uuid_generate_v1mc()::text, 20);
+ ?column? 
+----------
+ t
+(1 row)
+
