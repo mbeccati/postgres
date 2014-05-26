@@ -367,17 +367,16 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 
 	uuid_generate_random(uu);               
 	uuid_unparse(uu, strbuf);
-	buf = strbuf + 19;
+	buf = strbuf + 24;
 #else
-	char buf[20];
+	char buf[16];
 
-	sprintf(buf, "-%04x-%04x%08lx",
-			(unsigned)((arc4random() & 0x3FFF) | 0x8000),
+	sprintf(buf, "-%04x%08lx",
 			/* set IEEE802 multicast and local-admin bits */
 			(unsigned)((arc4random() & 0xffff) | 0x0300),
 			(unsigned long) arc4random());
 #endif
-	return uuid_generate_internal(1, NULL, buf, 18);
+	return uuid_generate_internal(1, NULL, buf, 13);
 #endif
 }
 
