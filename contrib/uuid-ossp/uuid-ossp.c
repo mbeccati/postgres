@@ -460,6 +460,10 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 	uuid_t		uu;
 
 	uuid_generate_random(uu);
+
+	/* set IEEE802 multicast and local-admin bits */
+	((dce_uuid *)uu)->node[0] |= 0x03;
+
 	uuid_unparse(uu, strbuf);
 	buf = strbuf + 24;
 #else							/* BSD */
@@ -472,7 +476,7 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 #endif
 
 	return uuid_generate_internal(UUID_MAKE_V1 | UUID_MAKE_MC, NULL,
-								  buf, buf ? 13 : 0);
+								  buf, 13);
 }
 
 
