@@ -64,7 +64,7 @@ else
 ALWAYS_SUBDIRS += sslinfo
 endif
 
-ifeq ($(with_ossp_uuid),yes)
+ifeq ($(with_uuid),yes)
 SUBDIRS += uuid-ossp
 else
 ALWAYS_SUBDIRS += uuid-ossp
