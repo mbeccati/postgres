@@ -462,7 +462,7 @@ uuid_generate_v1mc(PG_FUNCTION_ARGS)
 	uuid_generate_random(uu);
 
 	/* set IEEE802 multicast and local-admin bits */
-	((dce_uuid *)uu)->node[0] |= 0x03;
+	((dce_uuid_t *)&uu)->node[0] |= 0x03;
 
 	uuid_unparse(uu, strbuf);
 	buf = strbuf + 24;
